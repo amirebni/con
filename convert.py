@@ -4,7 +4,7 @@ import json
 import urllib.parse
 import os
 
-RAW_URL = os.environ.get("https://raw.githubusercontent.com/punez/Repo-5/refs/heads/main/alive.txt")
+RAW_URL = os.environ.get("RAW_URL")
 OUTPUT = "config.yaml"
 
 def fetch(url):
