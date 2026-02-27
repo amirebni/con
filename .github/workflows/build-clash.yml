@@ -1,1 +1,35 @@
 
+name: Build Clash Config
+
+on:
+  workflow_dispatch:
+    inputs:
+      raw_url:
+        description: "Raw GitHub URL"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Convert raw to Clash config
+        env:
+          RAW_URL: ${{ github.event.inputs.raw_url }}
+        run: python convert.py
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: clash-config
+          path: config.yaml
