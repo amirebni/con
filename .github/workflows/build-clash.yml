@@ -1,12 +1,9 @@
-
 name: Build Clash Config
 
 on:
+  schedule:
+    - cron: "0 3 * * *"   # هر روز 03:00 UTC (06:30 ایران تقریبی)
   workflow_dispatch:
-    inputs:
-      raw_url:
-        description: "Raw GitHub URL"
-        required: true
 
 jobs:
   build:
@@ -15,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -23,13 +20,13 @@ jobs:
       - name: Install deps
         run: pip install requests
 
-      - name: Convert raw to Clash config
-        env:
-          RAW_URL: ${{ github.event.inputs.raw_url }}
+      - name: Run converter
         run: python convert.py
 
-      - name: Upload result
-        uses: actions/upload-artifact@v4
-        with:
-          name: clash-config
-          path: config.yaml
+      - name: Commit result
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add config.yaml
+          git commit -m "Auto update config"
+          git push
